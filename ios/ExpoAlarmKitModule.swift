@@ -104,7 +104,7 @@ struct ScheduleRepeatingAlarmOptions: Record {
     @Field var snoozeDuration: Int?
 }
 
-@available(iOS 26.1, *)
+@available(iOS 26.0, *)
 struct ScheduleTimerOptions: Record {
     @Field var id: String
     @Field var duration: Double
@@ -549,8 +549,14 @@ public class ExpoAlarmKitModule: Module {
         }
         
         // MARK: - Schedule Timer Alarm
+        @available(iOS 26.1, *)
         AsyncFunction("scheduleTimerAlarm") { (options: ScheduleTimerOptions) async throws -> Bool in
             struct Meta: AlarmMetadata {}
+
+            guard #available(iOS 26.1, *) else {
+                print("[ExpoAlarmKit] Timer alarms require iOS 26.1 or newer")
+                return false
+            }
             
             guard let uuid = UUID(uuidString: options.id) else {
                 print("[ExpoAlarmKit] Invalid UUID string: \(options.id)")
